@@ -7,6 +7,7 @@ from gameparser import *
 
 
 
+
 def list_of_items(items):
     """This function takes a list of items (see items.py for the definition) and
     returns a comma-separated list of item names (as a string). For example:
@@ -205,6 +206,7 @@ def print_menu(exits, room_items, inv_items):
 
     """
     print("You can:")
+    print("CHECK the WEIGHT of your inventory")
     # Iterate over available exits
     for direction in exits:
         # Print the exit name and where it leads to
@@ -245,25 +247,30 @@ def execute_go(direction):
     (and prints the name of the room into which the player is
     moving). Otherwise, it prints "You cannot go there."
     """
+    global current_room
     if is_valid_exit(current_room["exits"], direction):
-        move(current_room["exits"], direction)
+        next_room = move(current_room["exits"], direction)
+        current_room = next_room
     else:
         print("You cannot go there.")
 
 
-def execute_take(item_id):
+def execute_take(item_id, current_weight):
     """This function takes an item_id as an argument and moves this item from the
     list of items in the current room to the player's inventory. However, if
     there is no such item in the room, this function prints
     "You cannot take that."
     """
     for item in current_room["items"]:
+        for thing in inventory:
+            current_weight += thing["mass"]
         if item_id == item["id"]:
-            current_room["items"].remove(item)
-            inventory.append(item)
-            print("taken")
-        else:
-            print("you cannot take that.")
+            if current_weight + item["mass"] <= max_weight:
+                current_room["items"].remove(item)
+                inventory.append(item)
+                print("taken")
+            else:
+                print("you cannot take that.")
 
 
 def execute_drop(item_id):
@@ -277,6 +284,12 @@ def execute_drop(item_id):
             current_room["items"].append(item)
         else:
             print("you cannot drop that.")
+
+
+def execute_check(current_weight):
+    for item in inventory:
+        current_weight += item["mass"]
+    print(current_weight, "KG you can carry 3.0 KG")
 
 
 def execute_command(command):
@@ -293,12 +306,13 @@ def execute_command(command):
     if command[0] == "go":
         if len(command) > 1:
             execute_go(command[1])
+
         else:
             print("Go where?")
 
     elif command[0] == "take":
         if len(command) > 1:
-            execute_take(command[1])
+            execute_take(command[1], current_weight)
         else:
             print("Take what?")
 
@@ -307,6 +321,12 @@ def execute_command(command):
             execute_drop(command[1])
         else:
             print("Drop what?")
+
+    elif command[0] == "check":
+        if len(command) > 1:
+            execute_check(current_weight)
+        else:
+            print("check what?")
 
     else:
         print("This makes no sense.")
@@ -354,7 +374,10 @@ def move(exits, direction):
 def main():
 
     # Main game loop
-    while True:
+    global running
+    running = True
+    while running:
+
         # Display game status (room description, inventory etc.)
         print_room(current_room)
         print_inventory_items(inventory)
@@ -364,6 +387,13 @@ def main():
 
         # Execute the player's command
         execute_command(command)
+
+        # check if won
+        if current_room == rooms["Parking"]:
+            if len(rooms["Parking"]["items"]) == 6:
+                print("wow you WIN! you moved all the items into the parking lot, WELL DONE")
+                running = False
+
 
 
 
