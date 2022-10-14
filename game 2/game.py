@@ -244,8 +244,8 @@ def execute_go(direction):
     (and prints the name of the room into which the player is
     moving). Otherwise, it prints "You cannot go there."
     """
-    if is_valid_exit(rooms["exits"], direction):
-        move(rooms["exits"], direction)
+    if is_valid_exit(current_room["exits"], direction):
+        move(current_room["exits"], direction)
     else:
         print("You cannot go there.")
 
@@ -256,8 +256,8 @@ def execute_take(item_id):
     there is no such item in the room, this function prints
     "You cannot take that."
     """
-    if item_id in rooms["items"]:
-        item_to_move = rooms["items"].pop(item_id)
+    if item_id in current_room["items"]:
+        item_to_move = current_room["items"].pop(item_id)
         inventory.append(item_to_move)
         print("taken")
     else:
@@ -275,7 +275,7 @@ def execute_drop(item_id):
             counter += 1
             if item == item_id:
                 item_to_move = inventory.pop(counter)
-                rooms["items"].append(item_to_move)
+                current_room["items"].append(item_to_move)
     else:
         print("you cannot drop that.")
     
