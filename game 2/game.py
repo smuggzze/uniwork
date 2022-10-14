@@ -122,7 +122,7 @@ def print_room(room):
     <BLANKLINE>
     MJ AND SIMON'S ROOM
     <BLANKLINE>
-    You are leaning agains the door of the systems managers'
+    You are leaning against the door of the systems managers'
     room. Inside you notice Matt "MJ" John and Simon Jones. They
     ignore you. To the north is the reception.
     <BLANKLINE>
@@ -141,6 +141,7 @@ def print_room(room):
     #
     # COMPLETE ME!
     #
+
 
 def exit_leads_to(exits, direction):
     """This function takes a dictionary of exits and a direction (a particular
@@ -256,12 +257,13 @@ def execute_take(item_id):
     there is no such item in the room, this function prints
     "You cannot take that."
     """
-    if item_id in current_room["items"]:
-        item_to_move = current_room["items"].pop(item_id)
-        inventory.append(item_to_move)
-        print("taken")
-    else:
-        print("you cannot take that.")
+    for item in current_room["items"]:
+        if item_id == item["id"]:
+            current_room["items"].remove(item)
+            inventory.append(item)
+            print("taken")
+        else:
+            print("you cannot take that.")
 
 
 def execute_drop(item_id):
@@ -269,16 +271,13 @@ def execute_drop(item_id):
     player's inventory to list of items in the current room. However, if there is
     no such item in the inventory, this function prints "You cannot drop that."
     """
-    if item_id in inventory:
-        counter = 0
-        for item in inventory:
-            counter += 1
-            if item == item_id:
-                item_to_move = inventory.pop(counter)
-                current_room["items"].append(item_to_move)
-    else:
-        print("you cannot drop that.")
-    
+    for item in inventory:
+        if item_id == item["id"]:
+            inventory.remove(item)
+            current_room["items"].append(item)
+        else:
+            print("you cannot drop that.")
+
 
 def execute_command(command):
     """This function takes a command (a list of words as returned by
