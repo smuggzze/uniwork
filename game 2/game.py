@@ -73,7 +73,14 @@ def print_inventory_items(items):
     <BLANKLINE>
 
     """
-    pass
+    if len(inventory) >= 1:
+        item_desc_list = []
+        for item in inventory:
+            item_desc_list.append(item["name"])
+        print("You have " + ", ".join(item_desc_list) + ".")
+        print()
+    else:
+        pass
 
 
 def print_room(room):
@@ -251,13 +258,26 @@ def execute_take(item_id):
     """
     if item_id in rooms["items"]:
         item_to_move = rooms["items"].pop(item_id)
+        inventory.append(item_to_move)
+        print("taken")
+    else:
+        print("you cannot take that.")
+
 
 def execute_drop(item_id):
     """This function takes an item_id as an argument and moves this item from the
     player's inventory to list of items in the current room. However, if there is
     no such item in the inventory, this function prints "You cannot drop that."
     """
-    pass
+    if item_id in inventory:
+        counter = 0
+        for item in inventory:
+            counter += 1
+            if item == item_id:
+                item_to_move = inventory.pop(counter)
+                rooms["items"].append(item_to_move)
+    else:
+        print("you cannot drop that.")
     
 
 def execute_command(command):
